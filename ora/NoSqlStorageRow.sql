@@ -1,0 +1,8 @@
+DROP TYPE NoSqlStorageRow;
+
+CREATE OR REPLACE TYPE NoSqlStorageRow AS OBJECT
+(
+  key VARCHAR2(4000),
+  value VARCHAR2(4000)
+)
+/

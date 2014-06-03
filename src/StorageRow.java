@@ -1,25 +1,23 @@
 import oracle.kv.Key;
-import oracle.kv.Value;
-
 /**
  * Created by Anatoly.Cherkasov on 06.02.14.
  * Класс для удобного хранения пар ключ значение. Позволяет скрыть реализацию key - value из NoSql
  */
 public class StorageRow {
-    private Key key;
-    private byte[] value;
+    private String key;
+    private String value;
 
-    StorageRow(Key key, byte[] value){
+    StorageRow(String key, String value){
         this.key = key;
         this.value = value;
     }
 
 
-    public byte[] getValue() {
+    public String getValue() {
         return value;
     }
 
-    public Key getKey() {
+    public String getKey() {
         return key;
     }
 }

@@ -1,10 +1,11 @@
 import oracle.kv.*;
 
+import java.io.UnsupportedEncodingException;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Anatoly.Cherkasov on 14.02.14.
+ * Класс харнилище для взаимодействия с NoSql
  */
 public class Storage {
 
@@ -72,11 +73,10 @@ public class Storage {
      * @param key Ключ по которому будем получать значение.  Ключ передается в форме /major/-/minor. Ключ передается полностью
      * @return Значение в виде объекта типа StorageRow
      */
-    public StorageRow getRow(Key key) throws NullPointerException
-    {
+    public StorageRow getRow(Key key) throws NullPointerException, UnsupportedEncodingException {
         ValueVersion valueVersion = store.get(key);
         Value value = valueVersion.getValue();
-        return new StorageRow(key, value.getValue());
+        return new StorageRow(key.toString(), new String(value.getValue(), "UTF-8"));
     }
 
     /**
@@ -98,7 +98,7 @@ public class Storage {
      */
     public void addRowList(ArrayList<StorageRow> storageRowArrayList){
         for (StorageRow sr : storageRowArrayList) {
-            this.addRow(sr.getKey(), sr.getValue());
+            this.addRow(Key.fromString(sr.getKey()), sr.getValue().getBytes());
         }
         System.out.println(storageRowArrayList.size() + " rows added");
     }
@@ -122,15 +122,30 @@ public class Storage {
      * @param key Ключ по которому будем получать значение. Ключ обязан иметь целый majorKey
      * @return Значение в виде объекта типа ArrayList<StorageRow>
      */
-    public ArrayList<StorageRow> getRowList(Key key) throws NullPointerException
+    public ArrayList<StorageRow> getRowList(Key key) throws NullPointerException, UnsupportedEncodingException
     {
+
+        System.out.println(key.getMinorPath().toString() + " ***  " + key.getMinorPath().size() );
+        // Сначала попробуем поискать строки как есил бы нам передали ключ с целой major частью ключа
         ArrayList<StorageRow> result = new ArrayList<StorageRow>();
         KeyValueVersion tmp;
         Iterator<KeyValueVersion> resultFormBase = store.multiGetIterator(Direction.FORWARD, 1, key, null, Depth.PARENT_AND_DESCENDANTS);
         while (resultFormBase.hasNext()) {
             tmp = resultFormBase.next();
-            result.add(new StorageRow(tmp.getKey(), tmp.getValue().getValue()));
+            result.add(new StorageRow(tmp.getKey().toString(), new String(tmp.getValue().getValue(), "UTF-8")));
         }
+
+        System.out.printf( " + "+ result.size() );
+
+        // Если нчиего не нашли то будем искать как будто передали не целую часть major ключа
+        if ( result.size() == 0 && key.getMinorPath().size() == 0 ) {
+            resultFormBase = store.storeIterator(Direction.UNORDERED, 1, key, null, Depth.PARENT_AND_DESCENDANTS);
+            while (resultFormBase.hasNext()) {
+                tmp = resultFormBase.next();
+                result.add(new StorageRow(tmp.getKey().toString(), new String(tmp.getValue().getValue(), "UTF-8")));
+            }
+        }
+        // Вернем результат
         return result;
     }
 
