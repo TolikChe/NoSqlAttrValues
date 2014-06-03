@@ -36,7 +36,7 @@ public class Storage {
 
         KVStoreConfig kconfig = new KVStoreConfig(storeName, storeHost + ":" + storePort);
         store = KVStoreFactory.getStore(kconfig);
-        System.out.println("Storage Opened");
+        //System.out.println("Storage Opened");
     }
 
     /**
@@ -44,7 +44,7 @@ public class Storage {
      */
     public void close(){
         store.close();
-        System.out.println("Storage Closed");
+        //System.out.println("Storage Closed");
     }
 
 

@@ -98,7 +98,7 @@ public class Start {
 
             kv.addRowList(new ArrayList(Arrays.asList(rows)));
            }
-*/
+
 
 
             System.out.println("Try 4.");
@@ -108,12 +108,13 @@ public class Start {
                 System.out.println(r.getKey().toString() + " : " + r.getValue());
             }
 
+*/
 
 
 
-            /*
             System.out.println(kv.getRowCount(Key.fromString("/cms_attr_value")));
 
+            /*
             kv.clearStorage(Key.fromString("/cms_attr_value"));
 
             System.out.println(kv.getRowCount(Key.fromString("/cms_attr_value")));
